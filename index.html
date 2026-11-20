@@ -1,42 +1,101 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>amazin — demo storefront</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>amazin — discover everyday essentials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="/styles.css">
   <script src="/config.js"></script>
 </head>
 <body>
+  <div class="announce">✨ Free shipping on orders over $25 &nbsp;·&nbsp; Easy 30-day returns &nbsp;·&nbsp; Demo storefront</div>
+
   <header class="topbar">
-    <a class="logo" href="/">amazin<span>.demo</span></a>
-    <div class="search"><input id="q" placeholder="Search products…" aria-label="Search"><button id="searchBtn">Search</button></div>
+    <a class="logo" href="/">amazin<span>.</span></a>
+    <div class="search">
+      <i data-lucide="search"></i>
+      <input id="q" placeholder="Search for products, brands and more…" aria-label="Search">
+      <button id="searchBtn">Search</button>
+    </div>
     <nav class="nav">
-      <a href="/">Home</a><a href="#deals">Deals</a><a href="#support">Support</a>
-      <button id="cartBtn" class="cart-btn">🛒 Shoping Cart <span id="cartCount" class="count">0</span></button>
+      <a href="#products">Products</a><a href="#deals">Deals</a><a href="#support">Support</a>
     </nav>
+    <button id="cartBtn" class="cart-btn">
+      <i data-lucide="shopping-cart"></i>
+      <span class="cart-label">Shoping Cart</span>
+      <span id="cartCount" class="count">0</span>
+    </button>
   </header>
 
   <section class="hero">
-    <div><span class="pill">Free shipping on orders over $25</span>
-      <h1>Everyday essentials,<br>delivered fast.</h1>
-      <p>A deliberately buggy demo storefront used to prove BugShield's detection and fix pipeline.</p>
-      <a class="cta" href="#products">Shop the deals</a></div>
-    <div class="hero-art" aria-hidden="true">📦</div>
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="pill"><i data-lucide="sparkles"></i> Curated for your everyday</span>
+        <h1>Little things.<br><em>Big difference.</em></h1>
+        <p>Thoughtfully picked essentials at prices that make sense. This is a deliberately buggy demo store — report what you find and watch BugShield fix it.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#products">Shop the collection <i data-lucide="arrow-right"></i></a>
+          <a class="btn ghost" href="#deals">See today's deals</a>
+        </div>
+        <div class="trust">
+          <span><i data-lucide="truck"></i> Fast delivery</span>
+          <span><i data-lucide="shield-check"></i> Secure checkout</span>
+          <span><i data-lucide="rotate-ccw"></i> Easy returns</span>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="orb orb-a"></div><div class="orb orb-b"></div>
+        <div class="showcase">
+          <div class="show-card s1">🎧</div>
+          <div class="show-card s2">⌨️</div>
+          <div class="show-card s3">💡</div>
+          <div class="show-badge"><i data-lucide="star"></i> 4.8 average rating</div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <main>
-    <div class="section-head"><h2 id="products">Popular products</h2><span class="dim" id="resultCount"></span></div>
+    <div class="section-head">
+      <div><span class="eyebrow">Handpicked for you</span><h2 id="products">Popular right now</h2></div>
+      <span class="result-pill" id="resultCount">8 items</span>
+    </div>
+    <div class="cat-row" id="cats">
+      <button class="cat active" data-cat="all">All products</button>
+      <button class="cat" data-cat="tech">Tech</button>
+      <button class="cat" data-cat="home">Home</button>
+      <button class="cat" data-cat="office">Office</button>
+    </div>
     <div class="grid" id="productGrid"></div>
 
-    <section id="cartPanel" class="cart-panel" hidden>
-      <div class="cart-head"><h2>Your cart</h2><button class="link" id="closeCart">Continue shopping</button></div>
-      <div id="cartItems"></div>
-      <div class="cart-foot"><div>Subtotal <b id="cartTotal">$0.00</b></div><button class="cta" id="checkoutBtn">Proceed to checkout</button></div>
+    <section class="deal" id="deals">
+      <div><span class="eyebrow">Limited time</span><h2>Deals worth grabbing</h2><p>Use code <b>SAVE10</b> at checkout for an extra 10% off.</p></div>
+      <div class="deal-art">🏷️</div>
     </section>
   </main>
 
-  <footer id="support"><div>amazin demo · BugShield project · <span class="dim">Not a real store.</span></div><div id="buildInfo" class="mono dim"></div></footer>
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="drawer-head"><div><i data-lucide="shopping-bag"></i><h2>Your cart</h2></div><button class="icon-btn" id="closeCart"><i data-lucide="x"></i></button></div>
+    <div id="cartItems" class="drawer-body"></div>
+    <div class="drawer-foot">
+      <div class="sum-row"><span>Subtotal</span><b id="cartTotal">$0.00</b></div>
+      <div class="sum-row muted"><span>Shipping</span><span>Calculated at checkout</span></div>
+      <button class="btn primary block" id="checkoutBtn">Proceed to checkout <i data-lucide="arrow-right"></i></button>
+    </div>
+  </aside>
+
+  <footer id="support">
+    <div class="foot-brand">amazin<span>.</span><p>A demo storefront built for BugShield.</p></div>
+    <div class="foot-col"><b>Shop</b><a href="#products">Products</a><a href="#deals">Deals</a></div>
+    <div class="foot-col"><b>Support</b><a href="#">Help centre</a><a href="#">Returns</a></div>
+    <div class="foot-col"><b>Build</b><span id="buildInfo" class="mono">local</span></div>
+  </footer>
 
   <script src="/app.js"></script>
 </body>

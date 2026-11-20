@@ -1,30 +1,34 @@
-// Amazin demo storefront — intentionally contains planted bugs for BugShield to find.
-// Answer keys live in PLANTED_BUGS.md / all-bug.md (gitignored).
+// Amazin demo storefront — intentionally buggy. Answer keys are gitignored.
 const PRODUCTS = [
-  { id: 1, name: 'Wireless Headphones', art: '🎧', price: 39.99, rating: 4.6 },
-  { id: 2, name: 'Mechanical Keyboard', art: '⌨️', price: 59.5, rating: 4.8 },
-  { id: 3, name: 'USB-C Hub', art: '🔌', price: 24.0, rating: 4.2 },
-  { id: 4, name: 'Desk Lamp', art: '💡', price: 18.75, rating: 4.4 },
-  { id: 5, name: 'Ceramic Mug', art: '☕', price: 9.25, rating: 4.9 },
-  { id: 6, name: 'Notebook Set', art: '📓', price: 12.99, rating: 4.1 },
-  { id: 7, name: 'Laptop Stand', art: '💻', price: 32.5, rating: 4.5 },
-  { id: 8, name: 'Webcam 1080p', art: '📷', price: 45.0, rating: 3.9 },
+  { id: 1, name: 'Wireless Headphones', art: '🎧', price: 39.99, rating: 4.6, cat: 'tech', tag: 'Bestseller', tint: 'linear-gradient(135deg,#e8e0ff,#cfc0ff)' },
+  { id: 2, name: 'Mechanical Keyboard', art: '⌨️', price: 59.50, rating: 4.8, cat: 'tech', tag: 'Top rated', tint: 'linear-gradient(135deg,#dff3ef,#b9e8dc)' },
+  { id: 3, name: 'USB-C Hub', art: '🔌', price: 24.00, rating: 4.2, cat: 'tech', tag: '', tint: 'linear-gradient(135deg,#e6ecff,#c8d8ff)' },
+  { id: 4, name: 'Desk Lamp', art: '💡', price: 18.75, rating: 4.4, cat: 'home', tag: 'New', tint: 'linear-gradient(135deg,#fff1d6,#ffdba1)' },
+  { id: 5, name: 'Ceramic Mug', art: '☕', price: 9.25, rating: 4.9, cat: 'home', tag: '', tint: 'linear-gradient(135deg,#ffe6e0,#ffc9bd)' },
+  { id: 6, name: 'Notebook Set', art: '📓', price: 12.99, rating: 4.1, cat: 'office', tag: '', tint: 'linear-gradient(135deg,#e8f0ff,#cbdcff)' },
+  { id: 7, name: 'Laptop Stand', art: '💻', price: 32.50, rating: 4.5, cat: 'office', tag: 'Popular', tint: 'linear-gradient(135deg,#e9e6ff,#d3ccff)' },
+  { id: 8, name: 'Webcam 1080p', art: '📷', price: 45.00, rating: 3.9, cat: 'tech', tag: '', tint: 'linear-gradient(135deg,#e2f4f6,#bfe6ec)' },
 ];
 
 let cart = [];
+let activeCat = 'all';
+let query = '';
+const money = (n) => '$' + n.toFixed(2);
 
-function money(n) { return '$' + n.toFixed(2); }
-
-function renderProducts(list = PRODUCTS) {
-  const grid = document.getElementById('productGrid');
-  grid.innerHTML = list.map((p) => `<article class="card" data-id="${p.id}">
-    <div class="art">${p.art}</div><h3>${p.name}</h3>
-    <div class="stars">★ ${p.rating} (128)</div>
+function renderProducts() {
+  const list = PRODUCTS.filter((p) => (activeCat === 'all' || p.cat === activeCat) && p.name.toLowerCase().includes(query));
+  document.getElementById('productGrid').innerHTML = list.map((p, idx) => `<article class="product" style="--i:${idx * 40}ms">
+    <div class="art" style="background:${p.tint}">
+      ${p.tag ? `<span class="tag">${p.tag}</span>` : ''}${p.art}
+    </div>
+    <h3>${p.name}</h3>
+    <div class="rate">★ <b>${p.rating}</b> (128 reviews)</div>
     <div class="price">${money(p.price)}</div>
-    <button class="add" data-add="${p.id}">Add to cart</button>
+    <button class="add" data-add="${p.id}"><i data-lucide="plus"></i> Add to cart</button>
   </article>`).join('');
-  document.getElementById('resultCount').textContent = `${list.length} items`;
-  grid.querySelectorAll('[data-add]').forEach((b) => b.onclick = () => addToCart(Number(b.dataset.add)));
+  document.getElementById('resultCount').textContent = `${list.length} item${list.length === 1 ? '' : 's'}`;
+  window.lucide?.createIcons();
+  document.querySelectorAll('[data-add]').forEach((b) => b.onclick = () => addToCart(Number(b.dataset.add)));
 }
 
 function addToCart(id) {
@@ -32,55 +36,59 @@ function addToCart(id) {
   if (!p) return;
   const line = cart.find((x) => x.id === id);
   if (line) line.qty += 1; else cart.push({ ...p, qty: 1 });
-  // BUG: cart badge is not refreshed here (bug #3).
-  toast('Added to cart');
+  // PLANTED BUG #3: the badge count is not refreshed here.
+  toast(`${p.name} added to your cart`);
 }
 
 function renderCart() {
-  const panel = document.getElementById('cartPanel');
   const items = document.getElementById('cartItems');
-  if (!cart.length) { items.innerHTML = '<p class="dim">Your cart is empty.</p>'; }
-  else {
-    items.innerHTML = cart.map((l) => `<div class="cart-row"><span>${l.art} ${l.name} × ${l.qty}</span><b>${money(l.price * l.qty)}</b></div>`).join('');
-  }
+  items.innerHTML = cart.length ? cart.map((l) => `<div class="cart-row">
+    <div class="ci">${l.art}</div><div class="cn">${l.name}<div class="cq">Qty ${l.qty} · ${money(l.price)}</div></div>
+    <b>${money(l.price * l.qty)}</b></div>`).join('')
+    : '<div style="padding:40px 0;text-align:center;color:#8893a8;font-size:13px">Your cart is empty.<br>Add something you like.</div>';
   document.getElementById('cartTotal').textContent = money(cart.reduce((s, l) => s + l.price * l.qty, 0));
   document.getElementById('cartCount').textContent = String(cart.reduce((s, l) => s + l.qty, 0));
-  panel.hidden = false;
+  document.getElementById('cartDrawer').classList.add('open');
+  document.getElementById('drawerBackdrop').classList.add('open');
+}
+
+function closeCart() {
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.getElementById('drawerBackdrop').classList.remove('open');
 }
 
 function checkout() {
   const total = cart.reduce((s, l) => s + l.price * l.qty, 0);
-  // BUG: wrong currency symbol on checkout total (bug #2).
+  // PLANTED BUG #2: euro symbol on a dollar store.
   alert('Total due: €' + total.toFixed(2));
 }
 
-function search() {
-  const q = document.getElementById('q').value.toLowerCase();
-  renderProducts(PRODUCTS.filter((p) => p.name.toLowerCase().includes(q)));
-}
-
 function toast(msg) {
-  let t = document.getElementById('toast');
-  if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText = 'position:fixed;bottom:22px;right:22px;background:#17202e;color:#fff;padding:12px 18px;border-radius:9px;z-index:99'; document.body.appendChild(t); }
-  t.textContent = msg;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.remove(), 2000);
+  const old = document.querySelector('.toast'); if (old) old.remove();
+  const el = document.createElement('div'); el.className = 'toast';
+  el.innerHTML = `<i data-lucide="check-circle-2"></i><span>${msg}</span>`;
+  document.body.appendChild(el); window.lucide?.createIcons();
+  setTimeout(() => el.remove(), 2200);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   renderProducts();
+  window.lucide?.createIcons();
   document.getElementById('cartBtn').onclick = renderCart;
-  document.getElementById('closeCart').onclick = () => document.getElementById('cartPanel').hidden = true;
+  document.getElementById('closeCart').onclick = closeCart;
+  document.getElementById('drawerBackdrop').onclick = closeCart;
   document.getElementById('checkoutBtn').onclick = checkout;
-  document.getElementById('searchBtn').onclick = search;
-  document.getElementById('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') search(); });
+  document.getElementById('searchBtn').onclick = () => { query = document.getElementById('q').value.toLowerCase(); renderProducts(); };
+  document.getElementById('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('searchBtn').click(); });
+  document.querySelectorAll('[data-cat]').forEach((b) => b.onclick = () => {
+    document.querySelectorAll('[data-cat]').forEach((x) => x.classList.toggle('active', x === b));
+    activeCat = b.dataset.cat; renderProducts();
+  });
   const build = window.BUGSHIELD_BUILD_INFO || {};
   document.getElementById('buildInfo').textContent = `build ${build.commit || 'local'}`;
-
-  // BugShield feedback widget (endpoint + key injected by scripts/build.mjs).
   if (window.BUGSHIELD_ENDPOINT && window.BUGSHIELD_KEY) {
     const s = document.createElement('script');
-    s.src = window.BUGSHIELD_ENDPOINT; s.setAttribute('data-key', window.BUGSHIELD_KEY);
-    s.async = true; document.body.appendChild(s);
+    s.src = window.BUGSHIELD_ENDPOINT; s.setAttribute('data-key', window.BUGSHIELD_KEY); s.async = true;
+    document.body.appendChild(s);
   }
 });
