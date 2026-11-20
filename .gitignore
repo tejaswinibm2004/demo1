@@ -1,3 +1,4 @@
 node_modules/
+config.local.js
 PLANTED_BUGS.md
 all-bug.md

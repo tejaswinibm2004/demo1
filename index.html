@@ -10,6 +10,13 @@
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <script src="/config.js"></script>
+  <script>
+    // Local-only override (config.local.js is gitignored). Never present in production.
+    if (['localhost', '127.0.0.1'].includes(location.hostname)) {
+      var s = document.createElement('script');
+      s.src = '/config.local.js'; s.async = false; document.head.appendChild(s);
+    }
+  </script>
 </head>
 <body>
   <div class="announce">✨ Free shipping on orders over $25 &nbsp;·&nbsp; Easy 30-day returns &nbsp;·&nbsp; Demo storefront</div>
